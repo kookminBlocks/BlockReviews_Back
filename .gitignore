@@ -390,3 +390,4 @@ FodyWeavers.xsd
 
 # ConnectionString json
 appsettings.Development.json
+BLockReviewsAPI/BLockReviewsAPI/appsettings.Development.json
