@@ -389,4 +389,4 @@ FodyWeavers.xsd
 *.bak
 
 # ConnectionString json
-ConnectionInfo.json
+appsettings.Development.json
