@@ -29,6 +29,8 @@ namespace BLockReviewsAPI
             services.AddControllers();
 
             services.AddPoemloConfig(Configuration);
+
+            services.AddSwaggerConfiguration();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,13 +43,16 @@ namespace BLockReviewsAPI
 
             app.UseHttpsRedirection();
 
+            app.UseSwaggerSetup();
+
             app.UseRouting();
+
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "/swagger");
             });
         }
     }
