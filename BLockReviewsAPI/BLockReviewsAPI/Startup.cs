@@ -1,5 +1,8 @@
+using BLockReviewsAPI.Bootstrapper;
+using BLockReviewsAPI.DBService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,11 +29,22 @@ namespace BLockReviewsAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddPoemloConfig(Configuration);
+
+            services.AddSwaggerConfiguration();
+
+            services.AddTransient<IUserDBService, UserDBService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -38,13 +52,16 @@ namespace BLockReviewsAPI
 
             app.UseHttpsRedirection();
 
+            app.UseSwaggerSetup();
+
             app.UseRouting();
+
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "/swagger");
             });
         }
     }
