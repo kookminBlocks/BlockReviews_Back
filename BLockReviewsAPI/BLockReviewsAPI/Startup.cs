@@ -1,4 +1,5 @@
 using BLockReviewsAPI.Bootstrapper;
+using BLockReviewsAPI.DBService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -32,6 +33,8 @@ namespace BLockReviewsAPI
             services.AddPoemloConfig(Configuration);
 
             services.AddSwaggerConfiguration();
+
+            services.AddTransient<IUserDBService, UserDBService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
