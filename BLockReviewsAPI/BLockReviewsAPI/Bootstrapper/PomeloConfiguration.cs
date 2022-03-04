@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BLockReviewsAPI.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -17,7 +18,19 @@ namespace BLockReviewsAPI.Bootstrapper
 
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 28));
 
-            //services.AddDbContext<>
+            services.AddDbContext<BlockReviewContext>(options =>
+            {
+                options.UseLazyLoadingProxies()
+                    .UseMySql(connectionStr, serverVersion);
+//#if DEBUG
+//                options
+//                    .UseLoggerFactory(LoggerFactory.Create(
+//                        builder => builder.AddConsole()))
+//                //     .EnableSensitiveDataLogging()
+//                ;
+//#endif
+            });
+
         }
     }
 }
