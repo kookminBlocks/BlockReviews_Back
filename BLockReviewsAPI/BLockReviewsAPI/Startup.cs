@@ -34,6 +34,8 @@ namespace BLockReviewsAPI
 
             services.AddSwaggerConfiguration();
 
+            services.AddEtherBlock();
+
             services.AddTransient<IUserDBService, UserDBService>();
         }
 
