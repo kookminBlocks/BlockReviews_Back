@@ -34,9 +34,9 @@ namespace BLockReviewsAPI
 
             services.AddSwaggerConfiguration();
 
-            services.AddEtherBlock();
+            services.AddEtherBlock();            
 
-            services.AddTransient<IUserDBService, UserDBService>();
+            services.AddDBservices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
