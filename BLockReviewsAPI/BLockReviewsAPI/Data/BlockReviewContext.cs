@@ -203,6 +203,10 @@ namespace BLockReviewsAPI.Data
                     .HasColumnName("AGE")
                     .HasComment("나이");
 
+                entity.Property(e => e.Password)
+                .HasColumnName("Password")
+                .HasComment("사용자 비밀번호")
+
                 entity.Property(e => e.Email)
                     .HasMaxLength(125)
                     .HasComment("이메일");
