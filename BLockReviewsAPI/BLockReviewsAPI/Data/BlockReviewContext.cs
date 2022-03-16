@@ -220,9 +220,13 @@ namespace BLockReviewsAPI.Data
                     .HasMaxLength(20)
                     .HasComment("남성:0, 여성:1");
 
-                entity.Property(e => e.LoginProvider)
-                    .HasMaxLength(16)
-                    .HasComment("외부 로그인 애플,네이버,구글,카카오");
+                entity.Property(e => e.AccountPrivateKey)
+                    .HasMaxLength(70)
+                    .HasComment("지갑 Private 키");
+
+                entity.Property(e => e.AccountPublicKey)
+                    .HasMaxLength(70)
+                    .HasComment("지갑 Public 키");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -234,9 +238,6 @@ namespace BLockReviewsAPI.Data
                     .HasMaxLength(15)
                     .HasComment("휴대폰 번호");
 
-                entity.Property(e => e.ProviderKey)
-                    .HasMaxLength(45)
-                    .HasComment("외부 로그인 key");
 
                 entity.Property(e => e.StDate)
                     .HasColumnType("datetime")
