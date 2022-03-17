@@ -1,4 +1,5 @@
-﻿using BLockReviewsAPI.Models;
+﻿using BLockReviewsAPI.DBService;
+using BLockReviewsAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,15 +13,21 @@ namespace BLockReviewsAPI.Controllers
     [ApiController]
     public class StoreController : ControllerBase
     {
-        public StoreController()
+        private IStoreDBService _storeDBService;
+        public StoreController(IStoreDBService storeDBService)
         {
-
+            _storeDBService = storeDBService;
         }
 
         [HttpPost("Create")]
-        public Task<IActionResult> CreateStore([FromBody] Store review)
+        public async Task<IActionResult> CreateStore([FromBody] Store store)
         {
+            var result = await _storeDBService.CreateStore(store);
 
+            if (result)
+                return Ok();
+            else
+                return BadRequest();
         }
     }
 }

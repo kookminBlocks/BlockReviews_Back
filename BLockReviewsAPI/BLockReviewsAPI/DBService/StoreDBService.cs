@@ -9,7 +9,7 @@ namespace BLockReviewsAPI.DBService
 {
     public interface IStoreDBService
     {
-        public Task<bool> CreateStore(Store review);
+        public Task<bool> CreateStore(Store store);
     }
 
     public class StoreDBService : IStoreDBService
@@ -28,7 +28,6 @@ namespace BLockReviewsAPI.DBService
                 return true;
             else
                 return false;
-
         }
     }    
 }
