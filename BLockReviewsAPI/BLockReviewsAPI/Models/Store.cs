@@ -14,11 +14,12 @@ namespace BLockReviewsAPI.Models
 
         public string Id { get; set; }
         public string UserId { get; set; }
+        public string CategoryId { get; set; }
+        public string ThumbNail { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Phone { get; set; }
         public string BuisnessNumber { get; set; }
-        public string CategoryId { get; set; }
         public DateTime? StDate { get; set; }
         public DateTime? FnsDate { get; set; }
 
