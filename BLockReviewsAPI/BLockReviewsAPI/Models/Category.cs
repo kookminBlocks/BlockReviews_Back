@@ -15,7 +15,8 @@ namespace BLockReviewsAPI.Models
 
         public string Id { get; set; }
         public string Title { get; set; }
-        public string SubTitle { get; set; }
+        public string ParentId { get; set; }
+        public int Level { get; set; }
         public DateTime? StDate { get; set; }
         public DateTime? FnsDate { get; set; }
 

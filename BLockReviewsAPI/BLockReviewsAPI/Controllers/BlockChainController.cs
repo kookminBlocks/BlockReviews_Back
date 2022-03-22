@@ -25,12 +25,7 @@ namespace BLockReviewsAPI.Controllers
             return Ok();
             //if (result) { return Ok(); }
             //else { return BadRequest(); }
-        }
-
-        public async Task<IActionResult> CreateAccount()
-        {
-            
-        }
+        }              
 
     }
 }

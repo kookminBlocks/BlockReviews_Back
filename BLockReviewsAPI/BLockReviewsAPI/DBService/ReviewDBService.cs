@@ -35,12 +35,12 @@ namespace BLockReviewsAPI.DBService
 
         public Review ReviewDetail(string reviewId)
         {
-            throw new NotImplementedException();
+            return context.Reviews.FirstOrDefault(e => e.Id == reviewId);
         }
 
         public List<Review> ReviewList(string st, string fns)
         {
-            throw new NotImplementedException();
+            return context.Reviews.OrderBy(e => e.StDate).ToList();
         }
     }
 }

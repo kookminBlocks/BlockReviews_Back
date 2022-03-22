@@ -47,18 +47,11 @@ namespace BLockReviewsAPI.BlockChainDI
             };
         }
 
+        private string ReviewContractAddress = "0xA75A0f01Fb51B0628F2da4edDc8498AfD3812EE3";
+        private string abi = @"[ {""inputs"": [ { ""internalType"": ""address payable"", ""name"": ""_tokenAddress"", ""type"": ""address"" } ], ""stateMutability"": ""payable"", ""type"": ""constructor"" }, { ""anonymous"": false, ""inputs"": [ { ""indexed"": false, ""internalType"": ""uint256"", ""name"": ""id"", ""type"": ""uint256"" }, { ""indexed"": false, ""internalType"": ""string"", ""name"": ""title"", ""type"": ""string"" }, { ""indexed"": false, ""internalType"": ""string"", ""name"": ""description"", ""type"": ""string"" }, { ""indexed"": false, ""internalType"": ""address"", ""name"": ""creator"", ""type"": ""address"" }, { ""indexed"": false, ""internalType"": ""uint256"", ""name"": ""liked"", ""type"": ""uint256"" } ], ""name"": ""ReviewInfo"", ""type"": ""event"" }, { ""inputs"": [ { ""internalType"": ""uint256"", ""name"": """", ""type"": ""uint256"" } ], ""name"": ""Review_Mapping"", ""outputs"": [ { ""internalType"": ""uint256"", ""name"": ""id"", ""type"": ""uint256"" }, { ""internalType"": ""string"", ""name"": ""title"", ""type"": ""string"" }, { ""internalType"": ""string"", ""name"": ""description"", ""type"": ""string"" }, { ""internalType"": ""address"", ""name"": ""creator"", ""type"": ""address"" }, { ""internalType"": ""uint256"", ""name"": ""liked"", ""type"": ""uint256"" } ], ""stateMutability"": ""view"", ""type"": ""function"" }, { ""inputs"": [ { ""internalType"": ""address"", ""name"": ""_owner"", ""type"": ""address"" } ], ""name"": ""getBalanceOf"", ""outputs"": [ { ""internalType"": ""uint256"", ""name"": """", ""type"": ""uint256"" } ], ""stateMutability"": ""view"", ""type"": ""function"" }, { ""inputs"": [], ""name"": ""getIdx"", ""outputs"": [ { ""internalType"": ""uint256"", ""name"": """", ""type"": ""uint256"" } ], ""stateMutability"": ""view"", ""type"": ""function"" }, { ""inputs"": [ { ""internalType"": ""uint256"", ""name"": ""_id"", ""type"": ""uint256"" }, { ""internalType"": ""address"", ""name"": ""_to"", ""type"": ""address"" }, { ""internalType"": ""uint256"", ""name"": ""_amount"", ""type"": ""uint256"" } ], ""name"": ""likeReview"", ""outputs"": [ { ""internalType"": ""bool"", ""name"": """", ""type"": ""bool"" }, { ""internalType"": ""bool"", ""name"": """", ""type"": ""bool"" } ],""stateMutability"": ""payable"",""type"": ""function""},{""inputs"": [],""name"": ""reviewTokenAddress"",""outputs"": [{""internalType"": ""contract ReviewToken"",""name"": """",""type"": ""address""}],""stateMutability"": ""view"",""type"": ""function""},{""inputs"": [{""internalType"": ""string"",""name"": ""_title"",""type"": ""string""},{""internalType"": ""string"",""name"": ""_descripiton"",""type"": ""string""},{""internalType"": ""address"",""name"": ""_to"",""type"": ""address""},{""internalType"": ""uint256"",""name"": ""_amount"",""type"": ""uint256""}],""name"": ""writeReview"",""outputs"": [{""internalType"": ""bool"",""name"": """",""type"": ""bool""},{""internalType"": ""bool"",""name"": """",""type"": ""bool""}],""stateMutability"": ""payable"",""type"": ""function""}]";
         public async Task SignTx(UserInfo user, string message)
         {
-            var signer1 = new EthereumMessageSigner();
-
-            var signature1 = signer1.EncodeUTF8AndSign(message, new EthECKey(user.AccountPrivateKey));
-
-            var addressRec1 = signer1.EncodeUTF8AndEcRecover(message, signature1);
-
-            var msg2 = "test";
-            var signer2 = new EthereumMessageSigner();
-            var signature2 = signer2.HashAndSign(msg2,
-                            "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7");
+            
 
         }
     }    

@@ -49,15 +49,19 @@ namespace BLockReviewsAPI.Data
                 entity.Property(e => e.StDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                    .HasComment("생성시간");
-
-                entity.Property(e => e.SubTitle)
-                    .HasMaxLength(45)
-                    .HasComment("카테고리명2 - 중식, 빵카페");
+                    .HasComment("생성시간");          
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(45)
                     .HasComment("카테고리 명 - 음식점, 카페");
+
+                entity.Property(e => e.ParentId)
+                    .HasMaxLength(36)
+                    .HasComment("부모 CateId");
+
+                entity.Property(e => e.Level)
+                    .HasMaxLength(10)
+                    .HasComment("카테고리 Level");
             });
 
             modelBuilder.Entity<Review>(entity =>
@@ -153,6 +157,11 @@ namespace BLockReviewsAPI.Data
                     .HasColumnType("text")
                     .HasComment("지점 소개");
 
+                entity.Property(e => e.ThumbNail)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasComment("썸네일");
+
                 entity.Property(e => e.FnsDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -204,8 +213,8 @@ namespace BLockReviewsAPI.Data
                     .HasComment("나이");
 
                 entity.Property(e => e.Password)
-                .HasColumnName("Password")
-                .HasComment("사용자 비밀번호")
+                    .HasColumnName("Password")
+                    .HasComment("사용자 비밀번호");
 
                 entity.Property(e => e.Email)
                     .HasMaxLength(125)

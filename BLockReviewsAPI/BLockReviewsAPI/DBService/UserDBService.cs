@@ -1,4 +1,5 @@
-﻿using BLockReviewsAPI.Data;
+﻿using BLockReviewsAPI.BlockChainDI;
+using BLockReviewsAPI.Data;
 using BLockReviewsAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,12 @@ namespace BLockReviewsAPI.DBService
     }
     public class UserDBService : IUserDBService
     {
+        private IEtherConn etherConn;
         private BlockReviewContext context;
-        public UserDBService(BlockReviewContext _context)
+        public UserDBService(BlockReviewContext _context, IEtherConn _etherConn)
         {
             context = _context;
+            etherConn = _etherConn;
         }
 
         public async Task<bool> IdExistCheck(string ID)
@@ -36,6 +39,11 @@ namespace BLockReviewsAPI.DBService
         public async Task<bool> RegisterUser(UserInfo user)
         {
             user.Password = GetHash(user.Password);
+
+            BlockReviewAccount account = await etherConn.CreateAccount();
+            user.AccountPrivateKey = GetHash(account.PrivateKey);
+            user.AccountPublicKey = account.PublicKey;
+
             context.UserInfos.Add(user);            
             int i = await context.SaveChangesAsync();
             if (i > 0)
