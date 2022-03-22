@@ -25,7 +25,7 @@ namespace BLockReviewsAPI.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,7 +49,7 @@ namespace BLockReviewsAPI.Data
                 entity.Property(e => e.StDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                    .HasComment("생성시간");          
+                    .HasComment("생성시간");
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(45)
@@ -230,11 +230,11 @@ namespace BLockReviewsAPI.Data
                     .HasComment("남성:0, 여성:1");
 
                 entity.Property(e => e.AccountPrivateKey)
-                    .HasMaxLength(70)
+                    .HasMaxLength(150)
                     .HasComment("지갑 Private 키");
 
                 entity.Property(e => e.AccountPublicKey)
-                    .HasMaxLength(70)
+                    .HasMaxLength(250)
                     .HasComment("지갑 Public 키");
 
                 entity.Property(e => e.Name)

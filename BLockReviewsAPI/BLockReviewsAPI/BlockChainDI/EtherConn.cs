@@ -1,58 +1,236 @@
 ﻿using BLockReviewsAPI.Models;
 using Microsoft.Extensions.Configuration;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Contracts;
 using Nethereum.Hex.HexConvertors.Extensions;
-using Nethereum.Signer;
+using Nethereum.Util;
 using Nethereum.Web3;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Nethereum.Hex.HexTypes;
 
 namespace BLockReviewsAPI.BlockChainDI
 {
-    public interface IEtherConn
-    {
-        public Task GetBlockNumber();
-        public Task<BlockReviewAccount> CreateAccount();
-    }
+	public interface IEtherConn
+	{
+		public Task GetBlockNumber();
+		public Task<BlockReviewAccount> CreateAccount();
 
-    public class EtherConn : IEtherConn
-    {
-        private string web3URL = "";
-        private IConfiguration configuration;
-        public EtherConn(IConfiguration _configuration)
-        {
-            configuration = _configuration;
-            web3URL = configuration["Ether:BlockURL"];
-        }
+		public Task ReviewContract(Review review, ReviewActions actions);
+	}
 
-        public async Task GetBlockNumber()
-        {
-            var web3 = new Web3(web3URL);
-            var latestBlockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();            
-            Console.WriteLine($"Latest Block Number is: {latestBlockNumber}");
-        }
+	public class EtherConn : IEtherConn
+	{
+		private Web3 web3;
+		private string web3URL = "";
+		private IConfiguration configuration;
+		public EtherConn(IConfiguration _configuration)
+		{
+			configuration = _configuration;
+			web3URL = configuration["Ether:BlockURL"];
+			web3 = new Web3(web3URL);
+		}
 
-        public async Task<BlockReviewAccount> CreateAccount()
-        {           
-            var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
-            var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
-            var account = new Nethereum.Web3.Accounts.Account(privateKey);
+		public async Task GetBlockNumber()
+		{
+			var balance = await web3.Eth.GetBalance.SendRequestAsync("0xF168C8E33782dB08771d337a7E2111cf8ea1a5F7");
 
-            return new BlockReviewAccount
-            {
-                 address = account.Address,
-                 PrivateKey = account.PrivateKey,
-                 PublicKey = account.PublicKey
-            };
-        }
+			var latestBlockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+			Console.WriteLine($"Latest Block Number is: {latestBlockNumber}");
+		}
 
-        private string ReviewContractAddress = "0xA75A0f01Fb51B0628F2da4edDc8498AfD3812EE3";
-        private string abi = @"[ {""inputs"": [ { ""internalType"": ""address payable"", ""name"": ""_tokenAddress"", ""type"": ""address"" } ], ""stateMutability"": ""payable"", ""type"": ""constructor"" }, { ""anonymous"": false, ""inputs"": [ { ""indexed"": false, ""internalType"": ""uint256"", ""name"": ""id"", ""type"": ""uint256"" }, { ""indexed"": false, ""internalType"": ""string"", ""name"": ""title"", ""type"": ""string"" }, { ""indexed"": false, ""internalType"": ""string"", ""name"": ""description"", ""type"": ""string"" }, { ""indexed"": false, ""internalType"": ""address"", ""name"": ""creator"", ""type"": ""address"" }, { ""indexed"": false, ""internalType"": ""uint256"", ""name"": ""liked"", ""type"": ""uint256"" } ], ""name"": ""ReviewInfo"", ""type"": ""event"" }, { ""inputs"": [ { ""internalType"": ""uint256"", ""name"": """", ""type"": ""uint256"" } ], ""name"": ""Review_Mapping"", ""outputs"": [ { ""internalType"": ""uint256"", ""name"": ""id"", ""type"": ""uint256"" }, { ""internalType"": ""string"", ""name"": ""title"", ""type"": ""string"" }, { ""internalType"": ""string"", ""name"": ""description"", ""type"": ""string"" }, { ""internalType"": ""address"", ""name"": ""creator"", ""type"": ""address"" }, { ""internalType"": ""uint256"", ""name"": ""liked"", ""type"": ""uint256"" } ], ""stateMutability"": ""view"", ""type"": ""function"" }, { ""inputs"": [ { ""internalType"": ""address"", ""name"": ""_owner"", ""type"": ""address"" } ], ""name"": ""getBalanceOf"", ""outputs"": [ { ""internalType"": ""uint256"", ""name"": """", ""type"": ""uint256"" } ], ""stateMutability"": ""view"", ""type"": ""function"" }, { ""inputs"": [], ""name"": ""getIdx"", ""outputs"": [ { ""internalType"": ""uint256"", ""name"": """", ""type"": ""uint256"" } ], ""stateMutability"": ""view"", ""type"": ""function"" }, { ""inputs"": [ { ""internalType"": ""uint256"", ""name"": ""_id"", ""type"": ""uint256"" }, { ""internalType"": ""address"", ""name"": ""_to"", ""type"": ""address"" }, { ""internalType"": ""uint256"", ""name"": ""_amount"", ""type"": ""uint256"" } ], ""name"": ""likeReview"", ""outputs"": [ { ""internalType"": ""bool"", ""name"": """", ""type"": ""bool"" }, { ""internalType"": ""bool"", ""name"": """", ""type"": ""bool"" } ],""stateMutability"": ""payable"",""type"": ""function""},{""inputs"": [],""name"": ""reviewTokenAddress"",""outputs"": [{""internalType"": ""contract ReviewToken"",""name"": """",""type"": ""address""}],""stateMutability"": ""view"",""type"": ""function""},{""inputs"": [{""internalType"": ""string"",""name"": ""_title"",""type"": ""string""},{""internalType"": ""string"",""name"": ""_descripiton"",""type"": ""string""},{""internalType"": ""address"",""name"": ""_to"",""type"": ""address""},{""internalType"": ""uint256"",""name"": ""_amount"",""type"": ""uint256""}],""name"": ""writeReview"",""outputs"": [{""internalType"": ""bool"",""name"": """",""type"": ""bool""},{""internalType"": ""bool"",""name"": """",""type"": ""bool""}],""stateMutability"": ""payable"",""type"": ""function""}]";
-        public async Task SignTx(UserInfo user, string message)
-        {
-            
+		public async Task<BlockReviewAccount> CreateAccount()
+		{
+			var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
+			var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
+			var account = new Nethereum.Web3.Accounts.Account(privateKey);
 
-        }
-    }    
+			return new BlockReviewAccount
+			{
+				address = account.Address,
+				PrivateKey = privateKey,
+				PublicKey = account.Address
+			};
+		}
+
+		private string ReviewContractAddress = "0xdCa52Fd1334dF9a69a2d3416590eB95Ec9f2CB6b";
+		private string abi = @"[
+	{
+		""inputs"": [
+			{
+				""internalType"": ""string"",
+				""name"": ""_title"",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": ""_des"",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": ""_writer"",
+				""type"": ""string""
+			}
+		],
+		""name"": ""create"",
+		""outputs"": [],
+		""stateMutability"": ""nonpayable"",
+		""type"": ""function""
+	},
+	{
+		""inputs"": [
+			{
+				""internalType"": ""uint256"",
+				""name"": ""_idx"",
+				""type"": ""uint256""
+			}
+		],
+		""name"": ""get"",
+		""outputs"": [
+			{
+				""internalType"": ""uint256"",
+				""name"": """",
+				""type"": ""uint256""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": """",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": """",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": """",
+				""type"": ""string""
+			}
+		],
+		""stateMutability"": ""view"",
+		""type"": ""function""
+	},
+	{
+		""inputs"": [],
+		""name"": ""getIdx"",
+		""outputs"": [
+			{
+				""internalType"": ""uint256"",
+				""name"": """",
+				""type"": ""uint256""
+			}
+		],
+		""stateMutability"": ""view"",
+		""type"": ""function""
+	},
+	{
+		""inputs"": [
+			{
+				""internalType"": ""uint256"",
+				""name"": """",
+				""type"": ""uint256""
+			}
+		],
+		""name"": ""Review_mapping"",
+		""outputs"": [
+			{
+				""internalType"": ""uint256"",
+				""name"": ""id"",
+				""type"": ""uint256""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": ""title"",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": ""description"",
+				""type"": ""string""
+			},
+			{
+				""internalType"": ""string"",
+				""name"": ""writer"",
+				""type"": ""string""
+			}
+		],
+		""stateMutability"": ""view"",
+		""type"": ""function""
+	}
+]";
+		public async Task ReviewContract(Review review, ReviewActions actions)
+		{
+			var privateKey = "9965659ffce1eb91e09f9675fea70ac49b2e0ecaa275a35406d53cf094d85932";
+			var senderAddress = "0xF168C8E33782dB08771d337a7E2111cf8ea1a5F7";
+
+			var account = new Nethereum.Web3.Accounts.Account(privateKey);
+			web3 = new Web3(account, web3URL);
+			web3.TransactionManager.UseLegacyAsDefault = true;
+
+
+			var contract = web3.Eth.GetContract(abi, ReviewContractAddress);
+
+
+			var function = contract.GetFunction(actions.ToString());
+
+			if (actions == ReviewActions.getIdx)
+			{
+				var result = await function.CallAsync<int>();
+			}
+			else if (actions == ReviewActions.create)
+			{
+				HexBigInteger GasPrice = Nethereum.Web3.Web3.Convert.ToWei(2.5, UnitConversion.EthUnit.Gwei).ToHexBigInteger();
+				HexBigInteger Gas = 200000.ToHexBigInteger();
+
+
+				// 이것도 되는거임
+				//	var transfer = new object[]
+				//	{
+				//		"text","text","test"					
+				//	};
+				//	var result = await function.SendTransactionAndWaitForReceiptAsync(senderAddress, Gas, GasPrice, null, transfer);
+
+				var transferHandler = web3.Eth.GetContractTransactionHandler<TransferFunction>();
+				var transfer = new TransferFunction()
+				{
+					title = "text",
+					des = "test",
+					writer = "test"
+				};
+
+				transfer.GasPrice = GasPrice;
+				transfer.Gas = Gas;
+				//transfer.Nonce = 2;
+
+				var transactionReceipt = await transferHandler.SendRequestAndWaitForReceiptAsync(ReviewContractAddress, transfer);
+				//var result = transactionReceipt.ContractAddress;
+				//var result = await transferHandler.SignTransactionAsync(ReviewContractAddress, transfer);
+
+
+			}
+
+		}
+	}
+
+	public enum ReviewActions
+	{
+		create,
+		get,
+		getIdx,
+	}
+
+	[Function("create")]
+	public class TransferFunction : FunctionMessage
+	{
+		[Parameter("string", "_title", 1)]
+		public string title { get; set; }
+
+		[Parameter("string", "_des", 2)]
+		public string des { get; set; }
+
+		[Parameter("string", "_writer", 3)]
+		public string writer { get; set; }
+	}
 }

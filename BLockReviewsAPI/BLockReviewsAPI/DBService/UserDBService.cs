@@ -32,28 +32,41 @@ namespace BLockReviewsAPI.DBService
 
             if (id == null)
                 return true;
-            else 
+            else
                 return false;
         }
 
         public async Task<bool> RegisterUser(UserInfo user)
         {
+
+            etherConn.GetBlockNumber();
+
             user.Password = GetHash(user.Password);
 
+            /*GetHash(account.PrivateKey);*/
+
             BlockReviewAccount account = await etherConn.CreateAccount();
-            user.AccountPrivateKey = GetHash(account.PrivateKey);
+            user.AccountPrivateKey = account.PrivateKey;
             user.AccountPublicKey = account.PublicKey;
 
-            context.UserInfos.Add(user);            
-            int i = await context.SaveChangesAsync();
-            if (i > 0)
+            context.UserInfos.Add(user);
+            try
             {
-                return true;
+                await context.SaveChangesAsync();
             }
-            else
+            catch (Exception ex)
             {
-                return false;
+
             }
+            return true;
+            //if (i > 0)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
 
         public async Task<bool> Login(string id, string pwd)
@@ -69,9 +82,9 @@ namespace BLockReviewsAPI.DBService
         private string GetHash(string origin)
         {
             using (SHA256 sha256Hash = SHA256.Create())
-            {                
+            {
                 byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(origin));
-                
+
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < bytes.Length; i++)
                 {
