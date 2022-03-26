@@ -13,8 +13,8 @@ namespace BLockReviewsAPI.Bootstrapper
     {
         public static void AddEtherBlock(this IServiceCollection services)
         {
-            services.AddSingleton<IEtherConn, EtherConn>();
-
+            //services.AddSingleton<IEtherConn, EtherConn>();
+            //services.AddScoped<IRegisterContract, RegisterContract>();
         }
     }
 }

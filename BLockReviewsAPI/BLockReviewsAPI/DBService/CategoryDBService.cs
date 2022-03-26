@@ -9,7 +9,7 @@ namespace BLockReviewsAPI.DBService
 {
     public interface ICategoryDBService
     {
-        public List<Category> SelectCate(int level, string parentId);
+        public List<Category> SelectCate(int level, string parentId);        
     }
 
     public class CategoryDBService : ICategoryDBService
