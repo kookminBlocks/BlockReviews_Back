@@ -29,5 +29,13 @@ namespace BLockReviewsAPI.Controllers
             else
                 return BadRequest();
         }
+
+        [HttpPost("Get")]
+        public async Task<IActionResult> GetStores([FromBody] Store store)
+        {
+            var result = await _storeDBService.GetStores();
+            
+            return Ok(result);            
+        }
     }
 }

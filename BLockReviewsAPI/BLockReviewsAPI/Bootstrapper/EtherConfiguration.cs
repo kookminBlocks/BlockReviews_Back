@@ -1,4 +1,5 @@
-﻿using BLockReviewsAPI.BlockChainDI;
+﻿using BLockReviewsAPI.ApiService;
+using BLockReviewsAPI.BlockChainDI;
 using BLockReviewsAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,8 @@ namespace BLockReviewsAPI.Bootstrapper
     {
         public static void AddEtherBlock(this IServiceCollection services)
         {
-            //services.AddSingleton<IEtherConn, EtherConn>();
+            services.AddSingleton<IEtherConn, EtherConn>();
+            services.AddSingleton<IBlockChainCall, BlockChainAPICalling>();
             //services.AddScoped<IRegisterContract, RegisterContract>();
         }
     }

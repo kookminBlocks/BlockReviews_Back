@@ -1,4 +1,5 @@
-﻿using BLockReviewsAPI.BlockChainDI;
+﻿using BLockReviewsAPI.ApiService;
+using BLockReviewsAPI.BlockChainDI;
 using BLockReviewsAPI.Data;
 using BLockReviewsAPI.Models;
 using System;
@@ -13,19 +14,19 @@ namespace BLockReviewsAPI.DBService
     public interface IUserDBService
     {
         public Task<bool> IdExistCheck(string Id);
-        public Task<bool> RegisterUser(UserInfo user);
-        public Task<bool> Login(string id, string pwd);
+        public Task<BlockApproveAccount> RegisterUser(UserInfo user);
+        public Task<UserInfo> Login(string id, string pwd);
     }
     public class UserDBService : IUserDBService
     {
+        private IBlockChainCall blockChainService;
         private IEtherConn etherConn;
-        private IRegisterContract registerContract;
         private BlockReviewContext context;
-        public UserDBService(BlockReviewContext _context, IEtherConn _etherConn, IRegisterContract _registerContract)
+        public UserDBService(BlockReviewContext _context, IEtherConn _etherConn, IBlockChainCall _blockChainService)
         {
             context = _context;
             etherConn = _etherConn;
-            registerContract = _registerContract;
+            blockChainService = _blockChainService;
         }
 
         public async Task<bool> IdExistCheck(string ID)
@@ -38,9 +39,12 @@ namespace BLockReviewsAPI.DBService
                 return false;
         }
 
-        public async Task<bool> RegisterUser(UserInfo user)
+        public async Task<BlockApproveAccount> RegisterUser(UserInfo user)
         {
-            await registerContract.RegisterAccount(user);            
+            //await registerContract.RegisterAccount(user);            
+            user.Password = GetHash(user.Password);
+
+            var account = await blockChainService.CreateAccount();
 
             context.UserInfos.Add(user);
 
@@ -50,27 +54,27 @@ namespace BLockReviewsAPI.DBService
 
                 if (i > 0)
                 {
-                    return true;
+                    return account;
                 }  
                 else
                 {
-                    return false;
+                    return null;
                 }
             }
             catch (Exception ex)
             {
-                return false;
+                return null;
             }
         }
 
-        public async Task<bool> Login(string id, string pwd)
+        public async Task<UserInfo> Login(string id, string pwd)
         {
             var LoginUser = context.UserInfos.FirstOrDefault(e => e.Id == id && e.Password == GetHash(pwd));
 
             if (LoginUser == null)
-                return false;
+                return LoginUser;
             else
-                return true;
+                return null;
         }
 
         private string GetHash(string origin)

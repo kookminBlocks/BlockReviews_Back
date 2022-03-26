@@ -1,4 +1,5 @@
-﻿using BLockReviewsAPI.BlockChainDI;
+﻿using BLockReviewsAPI.ApiService;
+using BLockReviewsAPI.BlockChainDI;
 using BLockReviewsAPI.Data;
 using BLockReviewsAPI.Models;
 using System;
@@ -16,17 +17,19 @@ namespace BLockReviewsAPI.DBService
     }
     public class ReviewDBService : IReviewService
     {
+        private IBlockChainCall blockChainCall;
         private IEtherConn blockService;
         private BlockReviewContext context;
-        public ReviewDBService(BlockReviewContext _context, IEtherConn _blockService)
+        public ReviewDBService(BlockReviewContext _context, IEtherConn _blockService, IBlockChainCall _blockChainCall)
         {
             context = _context;
             blockService = _blockService;
+            blockChainCall = _blockChainCall;
         }
 
         public async Task<bool> CreateReview(Review review)
         {
-            await blockService.ReviewContract(review, ReviewActions.create);
+            await blockChainCall.CreateReview(review);
             context.Reviews.Add(review);
             int i = await context.SaveChangesAsync();
 

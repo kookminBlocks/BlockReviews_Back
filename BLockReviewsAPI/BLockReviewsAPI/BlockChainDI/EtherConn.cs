@@ -45,12 +45,13 @@ namespace BLockReviewsAPI.BlockChainDI
 			var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
 			var account = new Nethereum.Web3.Accounts.Account(privateKey);
 
-			return new BlockReviewAccount
-			{
-				address = account.Address,
-				PrivateKey = privateKey,
-				PublicKey = account.Address
-			};
+			//return new BlockReviewAccount
+			//{
+			//	address = account.Address,
+			//	privatekey = privateKey,
+			//	publickey = account.Address
+			//};
+			return null;
 		}
 
 		private string ReviewContractAddress = "0xdCa52Fd1334dF9a69a2d3416590eB95Ec9f2CB6b";
