@@ -30,7 +30,7 @@ namespace BLockReviewsAPI.DBService
             else
                 return false;
         }
-
+        
         public async Task<List<Store>> GetStores()
         {
             return context.Stores.Take(10).ToList();

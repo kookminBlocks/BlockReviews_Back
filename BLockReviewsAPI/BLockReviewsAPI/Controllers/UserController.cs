@@ -1,9 +1,12 @@
 ﻿using BLockReviewsAPI.DBService;
 using BLockReviewsAPI.Models;
+using CsvHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,17 +30,31 @@ namespace BLockReviewsAPI.Controllers
 
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserInfo user)
-        {            
+        {       
             var result = await userDBService.RegisterUser(user);
-            if (result) { return Ok(); }
+
+            var records = new List<BlockApproveAccount>
+            {
+                new BlockApproveAccount { pubkey = result.pubkey, privatekey = result.privatekey }
+            };
+
+            var stream = new MemoryStream();
+            using (var writeFile = new StreamWriter(stream, leaveOpen: true))
+            {
+                var csv = new CsvWriter(writeFile, CultureInfo.InvariantCulture) ;                
+                csv.WriteRecords(records);
+            }
+            stream.Position = 0;
+
+            if (result != null) { return Ok(File(stream, "application/octet-stream", "Reports.csv")); }
             else { return BadRequest(); }
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] string id, string pwd)
+        public async Task<IActionResult> Login([FromBody] UserInfo user)
         {
-            var result = await userDBService.Login(id,pwd);
-            if (result) { return Ok(); }
+            var result = await userDBService.Login(user.Id, user.Password);
+            if (result != null) { return Ok(result); }
             else { return BadRequest(); }
         }
                 

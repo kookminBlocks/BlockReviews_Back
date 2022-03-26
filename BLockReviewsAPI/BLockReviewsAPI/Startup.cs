@@ -39,6 +39,18 @@ namespace BLockReviewsAPI
                 });
             });
 
+            services.AddHttpClient();
+
+            services.AddHttpClient("BlockReview", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri("http://3.38.183.241/");
+                
+                //httpClient.DefaultRequestHeaders.Add(
+                //    HeaderNames.Accept, "application/vnd.github.v3+json");
+                //httpClient.DefaultRequestHeaders.Add(
+                //    HeaderNames.UserAgent, "HttpRequestsSample");
+            });
+
             services.AddControllers();
 
             services.AddPoemloConfig(Configuration);
