@@ -10,6 +10,7 @@ namespace BLockReviewsAPI.DBService
     public interface IStoreDBService
     {
         public Task<bool> CreateStore(Store store);
+        public Task<List<Store>> GetStores();
     }
 
     public class StoreDBService : IStoreDBService
@@ -28,6 +29,11 @@ namespace BLockReviewsAPI.DBService
                 return true;
             else
                 return false;
+        }
+
+        public async Task<List<Store>> GetStores()
+        {
+            return context.Stores.Take(10).ToList();
         }
     }    
 }

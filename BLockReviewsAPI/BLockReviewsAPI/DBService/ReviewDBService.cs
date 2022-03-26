@@ -30,7 +30,6 @@ namespace BLockReviewsAPI.DBService
             context.Reviews.Add(review);
             int i = await context.SaveChangesAsync();
 
-
             if (i == 1)
             {
                 return true;

@@ -19,11 +19,13 @@ namespace BLockReviewsAPI.DBService
     public class UserDBService : IUserDBService
     {
         private IEtherConn etherConn;
+        private IRegisterContract registerContract;
         private BlockReviewContext context;
-        public UserDBService(BlockReviewContext _context, IEtherConn _etherConn)
+        public UserDBService(BlockReviewContext _context, IEtherConn _etherConn, IRegisterContract _registerContract)
         {
             context = _context;
             etherConn = _etherConn;
+            registerContract = _registerContract;
         }
 
         public async Task<bool> IdExistCheck(string ID)
@@ -38,35 +40,27 @@ namespace BLockReviewsAPI.DBService
 
         public async Task<bool> RegisterUser(UserInfo user)
         {
-
-            etherConn.GetBlockNumber();
-
-            user.Password = GetHash(user.Password);
-
-            /*GetHash(account.PrivateKey);*/
-
-            BlockReviewAccount account = await etherConn.CreateAccount();
-            user.AccountPrivateKey = account.PrivateKey;
-            user.AccountPublicKey = account.PublicKey;
+            await registerContract.RegisterAccount(user);            
 
             context.UserInfos.Add(user);
+
             try
             {
-                await context.SaveChangesAsync();
+                var i = await context.SaveChangesAsync();
+
+                if (i > 0)
+                {
+                    return true;
+                }  
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-
+                return false;
             }
-            return true;
-            //if (i > 0)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
         }
 
         public async Task<bool> Login(string id, string pwd)
