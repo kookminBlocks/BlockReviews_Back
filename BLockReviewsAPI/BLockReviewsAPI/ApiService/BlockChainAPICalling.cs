@@ -37,6 +37,7 @@ namespace BLockReviewsAPI.ApiService
             configuration = _configuration;
             httpFactory = _httpFactory;
             httpClient = httpFactory.CreateClient("BlockReview");
+            httpClient.Timeout = TimeSpan.FromMinutes(10);
             ApiKey = configuration["ApiKey"];
             AdminAccount = configuration["Ether:AdminAccount"];
         }
@@ -89,11 +90,13 @@ namespace BLockReviewsAPI.ApiService
             ReviewRequest req = new ReviewRequest
             {
                 admin = "0xB28333cab47389DE99277F1A79De9a80A8d8678b",
-                amount = 0,
+                amount = 1000,
                 category = review.StoreId,
                 description = review.Content,
-                privatekey = review.User.AccountPrivateKey,
-                pubkey = review.User.AccountPublicKey,
+                //privatekey = review.User.AccountPrivateKey,
+                //pubkey = review.User.AccountPublicKey,
+                privatekey = "0xc8ea77271577557b0ea20cbf69894e194472e54188c765fe10892c5fd5ade8d0",
+                pubkey = "0xcf2336e23F39638a1a42e7dd4A2Aa8cDBe9bFE42",
                 title = review.Title,
                 nftUri = "test"
             };
@@ -101,6 +104,8 @@ namespace BLockReviewsAPI.ApiService
             var payload = JsonConvert.SerializeObject(req);
 
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            httpClient.DefaultRequestHeaders.Add("Keep-Alive", "10000");
 
             var response = await httpClient.PostAsync("api/blockreview/review/create", content);
 

@@ -1,4 +1,5 @@
-﻿using BLockReviewsAPI.BlockChainDI;
+﻿using BLockReviewsAPI.ApiService;
+using BLockReviewsAPI.BlockChainDI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,10 +13,12 @@ namespace BLockReviewsAPI.Controllers
     [ApiController]
     public class BlockChainController : ControllerBase
     {
+        private IBlockChainCall block { get; set; }
         private IEtherConn etherService { get; set; }
-        public BlockChainController(IEtherConn _etherService)
+        public BlockChainController(IEtherConn _etherService, IBlockChainCall _block)
         {
             etherService = _etherService;
+            block = _block;
         }
 
         [HttpPost("GetBlockNumber")]
@@ -27,5 +30,20 @@ namespace BLockReviewsAPI.Controllers
             //else { return BadRequest(); }
         }              
 
+        [HttpPost("TEST")]
+        public async Task<IActionResult> test()
+        {
+            await block.CreateReview(new Models.Review
+            {
+                Id = Guid.NewGuid().ToString(),
+                Title = "test",
+                Content = "test",
+                StoreId = "test"
+            });
+            return Ok();
+            //if (result) { return Ok(); }
+            //else { return BadRequest(); }
+        }
     }
 }
+

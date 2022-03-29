@@ -14,7 +14,7 @@ namespace BLockReviewsAPI.DBService
     public interface IUserDBService
     {
         public Task<bool> IdExistCheck(string Id);
-        public Task<BlockApproveAccount> RegisterUser(UserInfo user);
+        public Task<UserInfo> RegisterUser(UserInfo user);
         public Task<UserInfo> Login(string id, string pwd);
     }
     public class UserDBService : IUserDBService
@@ -39,13 +39,15 @@ namespace BLockReviewsAPI.DBService
                 return false;
         }
 
-        public async Task<BlockApproveAccount> RegisterUser(UserInfo user)
+        public async Task<UserInfo> RegisterUser(UserInfo user)
         {
             //await registerContract.RegisterAccount(user);            
             user.Password = GetHash(user.Password);
 
             var account = await blockChainService.CreateAccount();
 
+            user.AccountPrivateKey = account.payload.privatekey;
+            user.AccountPublicKey = account.payload.address;
             context.UserInfos.Add(user);
 
             try
@@ -54,7 +56,7 @@ namespace BLockReviewsAPI.DBService
 
                 if (i > 0)
                 {
-                    return account;
+                    return user;
                 }  
                 else
                 {

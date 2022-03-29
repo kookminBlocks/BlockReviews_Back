@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace BLockReviewsAPI.Controllers
@@ -29,13 +30,13 @@ namespace BLockReviewsAPI.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterUser([FromBody] UserInfo user)
+        public async Task<FileStreamResult> RegisterUser([FromBody] UserInfo user)
         {       
             var result = await userDBService.RegisterUser(user);
 
             var records = new List<BlockApproveAccount>
             {
-                new BlockApproveAccount { pubkey = result.pubkey, privatekey = result.privatekey }
+                new BlockApproveAccount { pubkey = result.AccountPublicKey, privatekey = result.AccountPrivateKey }
             };
 
             var stream = new MemoryStream();
@@ -45,9 +46,13 @@ namespace BLockReviewsAPI.Controllers
                 csv.WriteRecords(records);
             }
             stream.Position = 0;
+            Response.ContentType = new MediaTypeHeaderValue("application/octet-stream").ToString();
 
-            if (result != null) { return Ok(File(stream, "application/octet-stream", "Reports.csv")); }
-            else { return BadRequest(); }
+            if (result != null)
+            {
+                return new FileStreamResult(stream, "text/csv") { FileDownloadName = $"{result.Id}_account.csv" };
+            }
+            else { return null; }
         }
 
         [HttpPost("Login")]
