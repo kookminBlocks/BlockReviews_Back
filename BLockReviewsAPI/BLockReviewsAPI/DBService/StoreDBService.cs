@@ -11,6 +11,7 @@ namespace BLockReviewsAPI.DBService
     {
         public Task<bool> CreateStore(Store store);
         public Task<List<Store>> GetStores();
+        public Task<List<Store>> GetUserStore(string userId);
     }
 
     public class StoreDBService : IStoreDBService
@@ -34,6 +35,11 @@ namespace BLockReviewsAPI.DBService
         public async Task<List<Store>> GetStores()
         {
             return context.Stores.Take(10).ToList();
+        }
+
+        public async Task<List<Store>> GetUserStore(string userId)
+        {
+            return context.Stores.Where(e => e.UserId == userId).ToList();
         }
     }    
 }

@@ -12,19 +12,28 @@ namespace BLockReviewsAPI.DBService
     public interface IReviewService
     {
         public Task<bool> CreateReview(Review review);
-        public Review ReviewDetail(string reviewId);
-        public List<Review> ReviewList(string st, string fns);
+        public Task<bool> AddLike(int reviewId, UserInfo user);
+        public Task<ReviewRes> ReviewDetail(int reviewId);        
+        public Task<List<ReviewRes>> GetReviewByStore(string storeId);
     }
     public class ReviewDBService : IReviewService
     {
         private IBlockChainCall blockChainCall;
-        private IEtherConn blockService;
         private BlockReviewContext context;
-        public ReviewDBService(BlockReviewContext _context, IEtherConn _blockService, IBlockChainCall _blockChainCall)
+        public ReviewDBService(BlockReviewContext _context, IBlockChainCall _blockChainCall)
         {
             context = _context;
-            blockService = _blockService;
             blockChainCall = _blockChainCall;
+        }
+
+        public async Task<bool> AddLike(int reviewId, UserInfo user)
+        {
+            var result = await blockChainCall.CreateLiked(reviewId, user);
+
+            if (result)
+                return true;
+            else
+                return false;
         }
 
         public async Task<bool> CreateReview(Review review)
@@ -42,9 +51,16 @@ namespace BLockReviewsAPI.DBService
 
         }
 
-        public Review ReviewDetail(string reviewId)
+        public async Task<List<ReviewRes>> GetReviewByStore(string storeId)
         {
-            return context.Reviews.FirstOrDefault(e => e.Id == reviewId);
+            var result = blockChainCall.GetReviewsByStore(storeId).Result;
+            return result;
+        }
+
+        public async Task<ReviewRes> ReviewDetail(int reviewId)
+        {
+            var result = blockChainCall.GetReviewDetail(reviewId).Result;
+            return result;
         }
 
         public List<Review> ReviewList(string st, string fns)

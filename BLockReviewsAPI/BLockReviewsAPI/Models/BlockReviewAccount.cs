@@ -35,15 +35,16 @@ namespace BLockReviewsAPI.Models
 
     public class ReviewLikeReq
     {
-        public string reviewId { get; set; }
+        public int reviewId { get; set; }
         public string pubkey { get; set; }
         public string privatekey { get; set; }
         public string admin { get; set; }
+        public int amount { get; set; }
     }
 
     public class ReviewSaleReq
     {
-        public string reviewId { get; set; }
+        public int reviewId { get; set; }
         public string pubkey { get; set; }
         public string privatekey { get; set; }
         public int price { get; set; }
@@ -51,8 +52,25 @@ namespace BLockReviewsAPI.Models
 
     public class TradeReq
     {
-        public string reviewId { get; set; }
+        public int reviewId { get; set; }
         public string pubKey_buyer { get; set; }
         public string privateKey_buyer { get; set; }
+    }
+
+    public class ReviewRes
+    {
+        public payloads payload { get; set; }
+        public class payloads
+        {
+            public string id { get; set; }
+            public string title { get; set; }
+            public string description { get; set; }
+            public string owner { get; set; }
+            public string[] liked { get; set; }
+            public string nftId { get; set; }
+            public string price { get; set; }
+            public string category { get; set; }
+            public string createAt { get; set; }
+        }
     }
 }

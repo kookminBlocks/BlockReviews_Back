@@ -31,11 +31,19 @@ namespace BLockReviewsAPI.Controllers
         }
 
         [HttpPost("Get")]
-        public async Task<IActionResult> GetStores([FromBody] Store store)
+        public async Task<IActionResult> GetStores()
         {
             var result = await _storeDBService.GetStores();
             
             return Ok(result);            
+        }
+
+        [HttpPost("GetByUser/{userId}")]
+        public async Task<IActionResult> GetStoreByUsers(string userId)
+        {
+            var result = await _storeDBService.GetUserStore(userId);
+
+            return Ok(result);
         }
     }
 }
