@@ -15,7 +15,7 @@ namespace BLockReviewsAPI.ApiService
     {
         public Task<BlockReviewAccount> CreateAccount();
         public Task<bool> CreateReview(Review review);
-        public Task<bool> CreateLiked(int reviewId, string user);
+        public Task<bool> CreateLiked(int reviewId, UserInfo user);
 
         public Task<bool> OnSale(int reviewId, int price, UserInfo user);
         public Task<bool> OffSale(int reviewId, UserInfo user);
@@ -116,7 +116,7 @@ namespace BLockReviewsAPI.ApiService
             }            
         }
 
-        public async Task<bool> CreateLiked(int reviewId, string userId)
+        public async Task<bool> CreateLiked(int reviewId, UserInfo user)
         {
             ReviewLikeReq req = new ReviewLikeReq
             {
