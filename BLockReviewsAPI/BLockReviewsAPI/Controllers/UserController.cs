@@ -58,7 +58,7 @@ namespace BLockReviewsAPI.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserInfo user)
         {
-            var result = await userDBService.Login(user.Id, user.Password);
+            var result = await userDBService.Login(user);
             if (result != null) { return Ok(result); }
             else { return BadRequest(); }
         }

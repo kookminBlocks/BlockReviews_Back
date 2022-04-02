@@ -44,7 +44,7 @@ namespace BLockReviewsAPI
             services.AddHttpClient("BlockReview", httpClient =>
             {
                 httpClient.BaseAddress = new Uri("http://3.38.183.241/");
-                
+                httpClient.Timeout = TimeSpan.FromMinutes(5);
                 //httpClient.DefaultRequestHeaders.Add(
                 //    HeaderNames.Accept, "application/vnd.github.v3+json");
                 //httpClient.DefaultRequestHeaders.Add(

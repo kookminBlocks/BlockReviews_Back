@@ -34,10 +34,23 @@ namespace BLockReviewsAPI.Controllers
         /// <summary>
         /// 리뷰 좋아요
         /// </summary>
-        [HttpPost("Like")]
-        public async Task<IActionResult> AddLike([FromBody] string userId, string reviewId)
+        [HttpPost("Like/{reviewId}")]
+        public async Task<IActionResult> AddLike([FromBody] UserInfo userId, [FromRoute] int reviewId)
         {
+            var like = await reviewDBService.AddLike(reviewId, userId);
+
             return Ok();
+        }
+
+
+        /// <summary>
+        /// 리뷰 좋아요
+        /// </summary>
+        [HttpPost("Get/{storeId}")]
+        public async Task<IActionResult> GetReviewByStore([FromRoute] string storeId)
+        {
+            var result = await reviewDBService.GetReviewByStore(storeId);
+            return Ok(result);
         }
     }
 }

@@ -33,12 +33,10 @@ namespace BLockReviewsAPI.Controllers
         [HttpPost("TEST")]
         public async Task<IActionResult> test()
         {
-            await block.CreateReview(new Models.Review
-            {
-                Id = Guid.NewGuid().ToString(),
-                Title = "test",
-                Content = "test",
-                StoreId = "test"
+            await block.CreateLiked(4,new Models.UserInfo
+            {                
+                AccountPrivateKey = "0xc8ea77271577557b0ea20cbf69894e194472e54188c765fe10892c5fd5ade8d0",
+                AccountPublicKey= "0xcf2336e23F39638a1a42e7dd4A2Aa8cDBe9bFE42",                
             });
             return Ok();
             //if (result) { return Ok(); }

@@ -15,18 +15,18 @@ namespace BLockReviewsAPI.ApiService
     {
         public Task<BlockReviewAccount> CreateAccount();
         public Task<bool> CreateReview(Review review);
-        public Task<bool> CreateLiked(string reviewId, UserInfo user);
+        public Task<bool> CreateLiked(int reviewId, string user);
 
-        public Task<bool> OnSale(string reviewId, int price, UserInfo user);
-        public Task<bool> OffSale(string reviewId, UserInfo user);
+        public Task<bool> OnSale(int reviewId, int price, UserInfo user);
+        public Task<bool> OffSale(int reviewId, UserInfo user);
 
-        public Task<List<Review>> GetReviewsByStore(string storeId);
+        public Task<List<ReviewRes>> GetReviewsByStore(string storeId);
+
+        public Task<ReviewRes> GetReviewDetail(int reviewId);
     }
 
     public class BlockChainAPICalling : IBlockChainCall
-    {
-        private const string ApiUrl = "";
-        private string ApiKey = "";
+    {        
         private string AdminAccount = "";
         private IConfiguration configuration;
         private IHttpClientFactory httpFactory;
@@ -37,8 +37,7 @@ namespace BLockReviewsAPI.ApiService
             configuration = _configuration;
             httpFactory = _httpFactory;
             httpClient = httpFactory.CreateClient("BlockReview");
-            httpClient.Timeout = TimeSpan.FromMinutes(10);
-            ApiKey = configuration["ApiKey"];
+            httpClient.Timeout = TimeSpan.FromMinutes(10);            
             AdminAccount = configuration["Ether:AdminAccount"];
         }
 
@@ -89,23 +88,19 @@ namespace BLockReviewsAPI.ApiService
         {
             ReviewRequest req = new ReviewRequest
             {
-                admin = "0xB28333cab47389DE99277F1A79De9a80A8d8678b",
-                amount = 1000,
+                title = review.Title,
                 category = review.StoreId,
                 description = review.Content,
-                //privatekey = review.User.AccountPrivateKey,
-                //pubkey = review.User.AccountPublicKey,
-                privatekey = "0xc8ea77271577557b0ea20cbf69894e194472e54188c765fe10892c5fd5ade8d0",
-                pubkey = "0xcf2336e23F39638a1a42e7dd4A2Aa8cDBe9bFE42",
-                title = review.Title,
-                nftUri = "test"
+                privatekey = review.User.AccountPrivateKey,
+                pubkey = review.User.AccountPublicKey,
+                nftUri = "0xtestIPFSHASH",
+                admin = AdminAccount,
+                amount = 1000,
             };
 
             var payload = JsonConvert.SerializeObject(req);
 
-            var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-            httpClient.DefaultRequestHeaders.Add("Keep-Alive", "10000");
+            var content = new StringContent(payload.ToString(), Encoding.UTF8, "application/json");                      
 
             var response = await httpClient.PostAsync("api/blockreview/review/create", content);
 
@@ -113,24 +108,23 @@ namespace BLockReviewsAPI.ApiService
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-
+                return true;
             }
             else
             {
-
-            }
-
-            return true;
+                return false;
+            }            
         }
 
-        public async Task<bool> CreateLiked(string reviewId, UserInfo user)
+        public async Task<bool> CreateLiked(int reviewId, string userId)
         {
             ReviewLikeReq req = new ReviewLikeReq
             {
+                reviewId = reviewId,
                 admin = AdminAccount,
-                privatekey = user.AccountPrivateKey,
+                amount = 100,
                 pubkey = user.AccountPublicKey,
-                reviewId = reviewId
+                privatekey = user.AccountPrivateKey,
             };
 
             var payload = JsonConvert.SerializeObject(req);
@@ -139,10 +133,18 @@ namespace BLockReviewsAPI.ApiService
 
             var response = await httpClient.PostAsync("api/blockreview/review/like", content);
 
-            return false;
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
 
-        public async Task<bool> OffSale(string reviewId, UserInfo user)
+        public async Task<bool> OffSale(int reviewId, UserInfo user)
         {
             ReviewSaleReq req = new ReviewSaleReq
             {
@@ -157,10 +159,17 @@ namespace BLockReviewsAPI.ApiService
 
             var response = await httpClient.PostAsync("api/blockreview/review/sale/offsale", content);
 
-            return false;
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public async Task<bool> OnSale(string revewId, int price, UserInfo user)
+        public async Task<bool> OnSale(int revewId, int price, UserInfo user)
         {
             ReviewSaleReq req = new ReviewSaleReq
             {
@@ -176,10 +185,17 @@ namespace BLockReviewsAPI.ApiService
 
             var response = await httpClient.PostAsync("api/blockreview/review/sale/onsale", content);
 
-            return false;
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public async Task Trade(string reviewId, UserInfo buy_user)
+        public async Task<bool> Trade(int reviewId, UserInfo buy_user)
         {
             TradeReq req = new TradeReq
             {
@@ -193,9 +209,18 @@ namespace BLockReviewsAPI.ApiService
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
             var response = await httpClient.PostAsync("api/blockreview/review/sale/trade", content);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public async Task<List<Review>> GetReviewsByStore(string storeId)
+        public async Task<List<ReviewRes>> GetReviewsByStore(string storeId)
         {
             var req = new
             {
@@ -208,7 +233,58 @@ namespace BLockReviewsAPI.ApiService
 
             var response = await httpClient.PostAsync("api/blockreview/review/read/category", content);
 
-            return null;
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var resValue = response.Content.ReadAsStringAsync().Result;
+                var reviews = JsonConvert.DeserializeObject<List<ReviewRes>>(resValue);
+
+                //var result = new List<Review>();
+
+                //reviews.ForEach(e => {
+                //    result.Add(new Review
+                //    {
+                //        Id = e.payload.id,
+                //        Title = e.payload.title,
+                //        Content = e.payload.description,
+                //        UserId = e.payload.owner,
+                //        StDate = e.payload.owner,
+                //        UserId = e.payload.owner,
+                //        UserId = e.payload.owner,
+                //    });
+                //});
+
+                return reviews;
+            }
+            else
+            {
+                return null;
+            }                        
+        }
+
+        public async Task<ReviewRes> GetReviewDetail(int reviewId)
+        {
+            var req = new
+            {
+                reviewId = reviewId,
+            };
+
+            var payload = JsonConvert.SerializeObject(req);
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync("api/blockreview/review/read/id", content);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var resValue = response.Content.ReadAsStringAsync().Result;
+                var review = JsonConvert.DeserializeObject<ReviewRes>(resValue);                
+
+                return review;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

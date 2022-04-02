@@ -15,7 +15,7 @@ namespace BLockReviewsAPI.DBService
     {
         public Task<bool> IdExistCheck(string Id);
         public Task<UserInfo> RegisterUser(UserInfo user);
-        public Task<UserInfo> Login(string id, string pwd);
+        public Task<UserInfo> Login(UserInfo user);
     }
     public class UserDBService : IUserDBService
     {
@@ -40,13 +40,12 @@ namespace BLockReviewsAPI.DBService
         }
 
         public async Task<UserInfo> RegisterUser(UserInfo user)
-        {
-            //await registerContract.RegisterAccount(user);            
+        {                 
             user.Password = GetHash(user.Password);
 
             var account = await blockChainService.CreateAccount();
 
-            user.AccountPrivateKey = account.payload.privatekey;
+            user.AccountPrivateKey = GetHash(account.payload.privatekey);
             user.AccountPublicKey = account.payload.address;
             context.UserInfos.Add(user);
 
@@ -69,14 +68,13 @@ namespace BLockReviewsAPI.DBService
             }
         }
 
-        public async Task<UserInfo> Login(string id, string pwd)
+        public async Task<UserInfo> Login(UserInfo user)
         {
-            var LoginUser = context.UserInfos.FirstOrDefault(e => e.Id == id && e.Password == GetHash(pwd));
+            var LoginUser = context.UserInfos.FirstOrDefault(e => e.Id == user.Id 
+                                                                && e.Password == GetHash(user.Password) 
+                                                                && e.AccountPrivateKey == GetHash(user.AccountPrivateKey));
 
-            if (LoginUser == null)
-                return LoginUser;
-            else
-                return null;
+            return LoginUser;
         }
 
         private string GetHash(string origin)
