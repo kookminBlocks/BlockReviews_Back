@@ -39,6 +39,10 @@ namespace BLockReviewsAPI
                 });
             });
 
+            services.AddControllers().AddNewtonsoftJson(options => {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+
             services.AddHttpClient();
 
             services.AddHttpClient("BlockReview", httpClient =>
