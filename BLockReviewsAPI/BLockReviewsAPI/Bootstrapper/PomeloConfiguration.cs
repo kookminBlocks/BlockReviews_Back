@@ -20,7 +20,7 @@ namespace BLockReviewsAPI.Bootstrapper
 
             services.AddDbContext<BlockReviewContext>(options =>
             {
-                options.UseLazyLoadingProxies()
+                options/*.UseLazyLoadingProxies()*/
                     .UseMySql(connectionStr, serverVersion);
 //#if DEBUG
 //                options
