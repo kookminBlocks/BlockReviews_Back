@@ -28,6 +28,8 @@ namespace BLockReviewsAPI.Controllers
         public async Task<IActionResult> SelectCateList(int level, string parentId)
         {
             return Ok(_cateDBService.SelectCate(level, parentId));
-        }
+
+        }               
+
     }
 }

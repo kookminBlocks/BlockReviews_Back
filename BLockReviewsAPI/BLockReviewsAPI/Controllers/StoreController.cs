@@ -30,7 +30,8 @@ namespace BLockReviewsAPI.Controllers
                 return BadRequest();
         }
 
-        [HttpPost("Get")]
+
+        [HttpGet("Get")]
         public async Task<IActionResult> GetStores()
         {
             var result = await _storeDBService.GetStores();
@@ -38,7 +39,8 @@ namespace BLockReviewsAPI.Controllers
             return Ok(result);            
         }
 
-        [HttpPost("GetByUser/{userId}")]
+
+        [HttpGet("GetByUser/{userId}")]
         public async Task<IActionResult> GetStoreByUsers(string userId)
         {
             var result = await _storeDBService.GetUserStore(userId);

@@ -34,7 +34,7 @@ namespace BLockReviewsAPI.Controllers
         /// <summary>
         /// 리뷰 좋아요
         /// </summary>
-        [HttpPost("Like/{reviewId}")]
+        [HttpPut("Like/{reviewId}")]
         public async Task<IActionResult> AddLike([FromBody] UserInfo userId, [FromRoute] int reviewId)
         {
             var like = await reviewDBService.AddLike(reviewId, userId);
@@ -46,7 +46,9 @@ namespace BLockReviewsAPI.Controllers
         /// <summary>
         /// 리뷰 좋아요
         /// </summary>
-        [HttpPost("Get/{storeId}")]
+
+        [HttpGet("Get/{storeId}")]
+
         public async Task<IActionResult> GetReviewByStore([FromRoute] string storeId)
         {
             var result = await reviewDBService.GetReviewByStore(storeId);

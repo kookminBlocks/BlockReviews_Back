@@ -36,7 +36,7 @@ namespace BLockReviewsAPI.Controllers
 
             var records = new List<BlockApproveAccount>
             {
-                new BlockApproveAccount { pubkey = result.AccountPublicKey, privatekey = result.AccountPrivateKey }
+                 new BlockApproveAccount { pubkey = result.AccountPublicKey, privatekey = result.OriginPrivateKey }
             };
 
             var stream = new MemoryStream();

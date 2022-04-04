@@ -55,6 +55,8 @@ namespace BLockReviewsAPI.DBService
 
                 if (i > 0)
                 {
+                    user.OriginPrivateKey = account.payload.privatekey;
+
                     return user;
                 }  
                 else
