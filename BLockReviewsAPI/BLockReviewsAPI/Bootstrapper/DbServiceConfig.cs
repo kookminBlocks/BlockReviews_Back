@@ -10,6 +10,7 @@ namespace BLockReviewsAPI.Bootstrapper
             services.AddTransient<IUserDBService, UserDBService>();
             services.AddTransient<IReviewService, ReviewDBService>();
             services.AddTransient<IStoreDBService, StoreDBService>();
+            services.AddTransient<ICategoryDBService, CategoryDBService>();
         }
 
     }
