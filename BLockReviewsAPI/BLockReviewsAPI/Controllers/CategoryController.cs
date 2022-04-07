@@ -24,12 +24,26 @@ namespace BLockReviewsAPI.Controllers
         /// <param name="level"></param>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        [HttpGet("Get/{level}/{parentId}")]
-        public async Task<IActionResult> SelectCateList(int level, string parentId)
+        [HttpGet("GetByLevel/{level}")]
+        public async Task<IActionResult> SelectCateList(int level)
         {
-            return Ok(_cateDBService.SelectCate(level, parentId));
+            return Ok(_cateDBService.SelectCate(level));
 
-        }               
+        }
 
+
+
+        /// <summary> 
+        /// 부모 ID로 카테고리 목록 조회
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        [HttpGet("GetByParentId/{parentId}")]
+        public async Task<IActionResult> SelectCateListByParentId(string parentId)
+        {
+            return Ok(_cateDBService.SelectCateByParentId(parentId));
+
+        }
     }
 }

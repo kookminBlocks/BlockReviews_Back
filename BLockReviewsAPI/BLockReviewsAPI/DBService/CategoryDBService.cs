@@ -9,7 +9,8 @@ namespace BLockReviewsAPI.DBService
 {
     public interface ICategoryDBService
     {
-        public List<Category> SelectCate(int level, string parentId);        
+        public List<Category> SelectCate(int level);
+        public List<Category> SelectCateByParentId(string parentId);
     }
 
     public class CategoryDBService : ICategoryDBService
@@ -20,16 +21,14 @@ namespace BLockReviewsAPI.DBService
             _context = context;
         }
 
-        public List<Category> SelectCate(int level, string parentId)
+        public List<Category> SelectCate(int level)
+        {            
+            return _context.Categories.Where(e => e.Level == level).ToList();            
+        }
+
+        public List<Category> SelectCateByParentId(string parentId)
         {
-            if (level > 1)
-            {
-                return _context.Categories.Where(e => e.ParentId.Equals(parentId) && e.Level == level).ToList();
-            }
-            else
-            {
-                return _context.Categories.Where(e => e.Level == level).ToList();
-            }
+            return _context.Categories.Where(e => e.ParentId == parentId).ToList();
         }
     }
 }

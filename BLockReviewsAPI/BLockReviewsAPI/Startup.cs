@@ -29,15 +29,14 @@ namespace BLockReviewsAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(opt =>
-            {
-                opt.AddPolicy(name: _policyName, builder =>
-                {
-                    builder.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            });
+            //services.AddCors(opt =>
+            //{
+            //    opt.AddDefaultPolicy(
+            //       policy =>
+            //       {
+            //           policy.WithOrigins("http://localhost:3000");
+            //       });
+            //});            
 
             services.AddControllers().AddNewtonsoftJson(options => {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -64,6 +63,16 @@ namespace BLockReviewsAPI
             services.AddEtherBlock();            
 
             services.AddDBservices();
+
+            services.AddCors(opt =>
+            {
+                opt.AddDefaultPolicy(
+                   policy =>
+                   {
+                       policy.WithOrigins("https://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                       policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                   });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,13 +88,13 @@ namespace BLockReviewsAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseSwaggerSetup();
 
             app.UseRouting();
 
-            app.UseCors(_policyName);
+            app.UseCors();            
+
+            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
