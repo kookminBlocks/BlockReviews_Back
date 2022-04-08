@@ -38,6 +38,16 @@ namespace BLockReviewsAPI
             //       });
             //});            
 
+            services.AddCors(opt =>
+            {
+                opt.AddDefaultPolicy(
+                   policy =>
+                   {
+                       policy.WithOrigins("https://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                       policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                   });
+            });
+
             services.AddControllers().AddNewtonsoftJson(options => {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
@@ -62,17 +72,7 @@ namespace BLockReviewsAPI
 
             services.AddEtherBlock();            
 
-            services.AddDBservices();
-
-            services.AddCors(opt =>
-            {
-                opt.AddDefaultPolicy(
-                   policy =>
-                   {
-                       policy.WithOrigins("https://localhost:3000").AllowAnyHeader().AllowAnyMethod();
-                       policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
-                   });
-            });
+            services.AddDBservices();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
