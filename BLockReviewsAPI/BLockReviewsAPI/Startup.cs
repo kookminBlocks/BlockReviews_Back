@@ -92,7 +92,10 @@ namespace BLockReviewsAPI
 
             app.UseRouting();
 
-            app.UseCors();            
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());            
 
             app.UseHttpsRedirection();
 

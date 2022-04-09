@@ -24,12 +24,16 @@ namespace BLockReviewsAPI.DBService
         public async Task<bool> CreateStore(Store store)
         {
             context.Stores.Add(store);
-            int i = await context.SaveChangesAsync();
+            try
+            {
+                int i = await context.SaveChangesAsync();
 
-            if (i == 1)
+
                 return true;
-            else
+            }catch(Exception ex)
+            {
                 return false;
+            }
         }
         
         public async Task<List<Store>> GetStores()
