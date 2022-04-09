@@ -11,7 +11,7 @@ namespace BLockReviewsAPI.DBService
 {
     public interface IReviewService
     {
-        public Task<bool> CreateReview(Review review);
+        public Task CreateReview(Review review);
         public Task<bool> AddLike(int reviewId, UserInfo user);
         public Task<ReviewRes> ReviewDetail(int reviewId);        
         public Task<List<ReviewRes>> GetReviewByStore(string storeId);
@@ -36,19 +36,12 @@ namespace BLockReviewsAPI.DBService
                 return false;
         }
 
-        public async Task<bool> CreateReview(Review review)
+        public async Task CreateReview(Review review)
         {
             await blockChainCall.CreateReview(review);
+            review.User = null;
             context.Reviews.Add(review);
             int i = await context.SaveChangesAsync();
-
-            if (i == 1)
-            {
-                return true;
-            }
-            else
-                return false;
-
         }
 
         public async Task<List<ReviewRes>> GetReviewByStore(string storeId)

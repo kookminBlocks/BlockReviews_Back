@@ -27,9 +27,15 @@ namespace BLockReviewsAPI.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> CreateReview([FromBody] Review review)
         {
-            await reviewDBService.CreateReview(review);
-
-            return Ok();
+            try
+            {
+                await reviewDBService.CreateReview(review);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
