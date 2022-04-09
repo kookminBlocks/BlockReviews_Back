@@ -1,5 +1,6 @@
 ﻿using BLockReviewsAPI.DBService;
 using BLockReviewsAPI.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace BLockReviewsAPI.Controllers
         /// 리뷰 생성
         /// </summary>
         /// <param name="review"></param>
-        /// <returns></returns>
+        /// <returns></returns>        
         [HttpPost("Create")]
         public async Task<IActionResult> CreateReview([FromBody] Review review)
         {
@@ -33,7 +34,7 @@ namespace BLockReviewsAPI.Controllers
 
         /// <summary>
         /// 리뷰 좋아요
-        /// </summary>
+        /// </summary>        
         [HttpPut("Like/{reviewId}")]
         public async Task<IActionResult> AddLike([FromBody] UserInfo userId, [FromRoute] int reviewId)
         {
