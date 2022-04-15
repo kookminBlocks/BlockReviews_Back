@@ -62,10 +62,8 @@ namespace BLockReviewsAPI.ApiService
 
                 var faucet = await httpClient.PostAsync("api/blockreview/user/faucet", content);
 
-                if (faucet.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return result;
-                }
+                
+                return result;                
             }
             else
             {
