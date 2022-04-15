@@ -51,14 +51,26 @@ namespace BLockReviewsAPI.Controllers
 
 
         /// <summary>
-        /// 리뷰 좋아요
+        /// 리뷰 조회
         /// </summary>
 
-        [HttpGet("Get/{storeId}")]
+        [HttpGet("GetReviewByStore/{storeId}")]
 
         public async Task<IActionResult> GetReviewByStore([FromRoute] string storeId)
         {
             var result = await reviewDBService.GetReviewByStore(storeId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 리뷰 조회
+        /// </summary>
+
+        [HttpGet("GetReviewByUser/{UserId}")]
+
+        public async Task<IActionResult> GetReviewByUser([FromRoute] string userId)
+        {
+            var result = await reviewDBService.GetReviewByUser(userId);
             return Ok(result);
         }
     }

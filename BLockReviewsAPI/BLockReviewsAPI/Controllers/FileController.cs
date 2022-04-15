@@ -21,7 +21,7 @@ namespace BLockReviewsAPI.Controllers
         }
 
         [HttpPost("Upload")]
-        public async Task<IActionResult> Upload([FromForm]IFormFile file)
+        public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
             var fileName = Path.GetFileName(ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'));
 
@@ -40,7 +40,13 @@ namespace BLockReviewsAPI.Controllers
                 await file.CopyToAsync(fileStream);
             }
 
-            return Ok();
+            return Ok(path);
         }
+    }
+
+    public class FormModel
+    {
+        public string fileName { get; set; }
+        public IFormFile file { get; set; }
     }
 }

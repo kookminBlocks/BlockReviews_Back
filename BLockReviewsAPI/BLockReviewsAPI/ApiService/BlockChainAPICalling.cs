@@ -20,9 +20,11 @@ namespace BLockReviewsAPI.ApiService
         public Task<bool> OnSale(int reviewId, int price, UserInfo user);
         public Task<bool> OffSale(int reviewId, UserInfo user);
 
-        public Task<List<ReviewRes>> GetReviewsByStore(string storeId);
+        public Task<ReviewRes> GetReviewsByStore(string storeId);
+        public Task<ReviewResByUser> GetReviewsByUser(string pubkey);
 
         public Task<ReviewRes> GetReviewDetail(int reviewId);
+
     }
 
     public class BlockChainAPICalling : IBlockChainCall
@@ -50,7 +52,20 @@ namespace BLockReviewsAPI.ApiService
 
             if (await Approve(result))
             {
-                return result;
+                var req = new
+                {
+                    sendTo = result.payload.address,
+                };
+                var payload = JsonConvert.SerializeObject(req);
+
+                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+                var faucet = await httpClient.PostAsync("api/blockreview/user/faucet", content);
+
+                if (faucet.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return result;
+                }
             }
             else
             {
@@ -220,11 +235,11 @@ namespace BLockReviewsAPI.ApiService
             }
         }
 
-        public async Task<List<ReviewRes>> GetReviewsByStore(string storeId)
+        public async Task<ReviewRes> GetReviewsByStore(string storeId)
         {
             var req = new
             {
-                storeId = storeId,
+                category = storeId,
             };
 
             var payload = JsonConvert.SerializeObject(req);
@@ -236,7 +251,7 @@ namespace BLockReviewsAPI.ApiService
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var resValue = response.Content.ReadAsStringAsync().Result;
-                var reviews = JsonConvert.DeserializeObject<List<ReviewRes>>(resValue);
+                var reviews = JsonConvert.DeserializeObject<ReviewRes>(resValue);
 
                 //var result = new List<Review>();
 
@@ -280,6 +295,32 @@ namespace BLockReviewsAPI.ApiService
                 var review = JsonConvert.DeserializeObject<ReviewRes>(resValue);                
 
                 return review;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<ReviewResByUser> GetReviewsByUser(string PublicKey)
+        {
+            var req = new
+            {
+                pubkey = PublicKey,
+            };
+
+            var payload = JsonConvert.SerializeObject(req);
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync("api/blockreview/review/read/owner", content);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var resValue = response.Content.ReadAsStringAsync().Result;
+                var reviews = JsonConvert.DeserializeObject<ReviewResByUser>(resValue);
+
+                return reviews;
             }
             else
             {
