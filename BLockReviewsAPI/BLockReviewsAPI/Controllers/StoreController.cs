@@ -31,6 +31,18 @@ namespace BLockReviewsAPI.Controllers
         }
 
 
+        [HttpGet("Detail/{storeId}")]
+        public async Task<IActionResult> GetStoreDetail([FromRoute] string storeId)
+        {
+            var result = await _storeDBService.GetStoreDetail(storeId);
+
+            if (result != null)
+                return Ok(result);
+            else
+                return BadRequest();
+        }
+
+
         [HttpGet("Get")]
         public async Task<IActionResult> GetStores()
         {

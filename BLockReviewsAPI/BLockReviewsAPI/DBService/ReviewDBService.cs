@@ -1,5 +1,6 @@
 ﻿using BLockReviewsAPI.ApiService;
 using BLockReviewsAPI.BlockChainDI;
+using BLockReviewsAPI.Controllers;
 using BLockReviewsAPI.Data;
 using BLockReviewsAPI.Models;
 using System;
@@ -11,10 +12,12 @@ namespace BLockReviewsAPI.DBService
 {
     public interface IReviewService
     {
-        public Task<bool> CreateReview(Review review);
+        public Task CreateReview(Review review);
         public Task<bool> AddLike(int reviewId, UserInfo user);
         public Task<ReviewRes> ReviewDetail(int reviewId);        
-        public Task<List<ReviewRes>> GetReviewByStore(string storeId);
+        public Task<ReviewRes> GetReviewByStore(string storeId);
+        public Task<ReviewResByUser> GetReviewByUser(string pubkey);
+        public Task<IpfsRes> IpfsCreate(CreateIpfs ipfs);
     }
     public class ReviewDBService : IReviewService
     {
@@ -36,24 +39,29 @@ namespace BLockReviewsAPI.DBService
                 return false;
         }
 
-        public async Task<bool> CreateReview(Review review)
+        public async Task CreateReview(Review review)
         {
             await blockChainCall.CreateReview(review);
+            review.User = null;
             context.Reviews.Add(review);
             int i = await context.SaveChangesAsync();
-
-            if (i == 1)
-            {
-                return true;
-            }
-            else
-                return false;
-
         }
 
-        public async Task<List<ReviewRes>> GetReviewByStore(string storeId)
+        public async Task<ReviewRes> GetReviewByStore(string storeId)
         {
             var result = blockChainCall.GetReviewsByStore(storeId).Result;
+            return result;
+        }
+
+        public async Task<ReviewResByUser> GetReviewByUser(string pubkey)
+        {
+            var result = blockChainCall.GetReviewsByUser(pubkey).Result;
+            return result;
+        }
+
+        public async Task<IpfsRes> IpfsCreate(CreateIpfs ipfs)
+        {
+            var result = blockChainCall.CreateIpfs(ipfs).Result;
             return result;
         }
 

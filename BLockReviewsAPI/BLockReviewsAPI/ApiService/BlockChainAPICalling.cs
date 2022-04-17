@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using BLockReviewsAPI.Controllers;
+using System.IO;
 
 namespace BLockReviewsAPI.ApiService
 {
@@ -20,9 +22,13 @@ namespace BLockReviewsAPI.ApiService
         public Task<bool> OnSale(int reviewId, int price, UserInfo user);
         public Task<bool> OffSale(int reviewId, UserInfo user);
 
-        public Task<List<ReviewRes>> GetReviewsByStore(string storeId);
+        public Task<ReviewRes> GetReviewsByStore(string storeId);
+        public Task<ReviewResByUser> GetReviewsByUser(string pubkey);
 
         public Task<ReviewRes> GetReviewDetail(int reviewId);
+
+        public Task<IpfsRes> CreateIpfs(CreateIpfs ipfs);
+
     }
 
     public class BlockChainAPICalling : IBlockChainCall
@@ -50,7 +56,18 @@ namespace BLockReviewsAPI.ApiService
 
             if (await Approve(result))
             {
-                return result;
+                var req = new
+                {
+                    sendTo = result.payload.address,
+                };
+                var payload = JsonConvert.SerializeObject(req);
+
+                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+                var faucet = await httpClient.PostAsync("api/blockreview/user/faucet", content);
+
+                
+                return result;                
             }
             else
             {
@@ -91,9 +108,9 @@ namespace BLockReviewsAPI.ApiService
                 title = review.Title,
                 category = review.StoreId,
                 description = review.Content,
-                privatekey = review.User.AccountPrivateKey,
-                pubkey = review.User.AccountPublicKey,
-                nftUri = "0xtestIPFSHASH",
+                privatekey = review.User?.AccountPrivateKey,
+                pubkey = review.User?.AccountPublicKey,
+                nftUri = review.NftUrl,
                 admin = AdminAccount,
                 amount = 1000,
             };
@@ -220,11 +237,11 @@ namespace BLockReviewsAPI.ApiService
             }
         }
 
-        public async Task<List<ReviewRes>> GetReviewsByStore(string storeId)
+        public async Task<ReviewRes> GetReviewsByStore(string storeId)
         {
             var req = new
             {
-                storeId = storeId,
+                category = storeId,
             };
 
             var payload = JsonConvert.SerializeObject(req);
@@ -236,7 +253,7 @@ namespace BLockReviewsAPI.ApiService
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var resValue = response.Content.ReadAsStringAsync().Result;
-                var reviews = JsonConvert.DeserializeObject<List<ReviewRes>>(resValue);
+                var reviews = JsonConvert.DeserializeObject<ReviewRes>(resValue);
 
                 //var result = new List<Review>();
 
@@ -280,6 +297,56 @@ namespace BLockReviewsAPI.ApiService
                 var review = JsonConvert.DeserializeObject<ReviewRes>(resValue);                
 
                 return review;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<ReviewResByUser> GetReviewsByUser(string PublicKey)
+        {
+            var req = new
+            {
+                pubkey = PublicKey,
+            };
+
+            var payload = JsonConvert.SerializeObject(req);
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync("api/blockreview/review/read/owner", content);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var resValue = response.Content.ReadAsStringAsync().Result;
+                var reviews = JsonConvert.DeserializeObject<ReviewResByUser>(resValue);
+
+                return reviews;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<IpfsRes> CreateIpfs(CreateIpfs ipfs)
+        {
+            var payload = JsonConvert.SerializeObject(ipfs);
+
+            var multiForm = new MultipartFormDataContent();            
+            multiForm.Add(new StringContent(ipfs.Title), "name");
+            multiForm.Add(new StringContent(ipfs.Description), "description");            
+            multiForm.Add(new StreamContent(ipfs.file.OpenReadStream()), "file");            
+
+            var response = await httpClient.PostAsync("api/blockreview/review/create/ipfs", multiForm);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var resValue = response.Content.ReadAsStringAsync().Result;
+                var reviews = JsonConvert.DeserializeObject<IpfsRes>(resValue);
+
+                return reviews;
             }
             else
             {

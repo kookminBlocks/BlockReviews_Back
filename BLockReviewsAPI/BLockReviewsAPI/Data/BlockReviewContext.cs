@@ -86,6 +86,14 @@ namespace BLockReviewsAPI.Data
                     .HasColumnType("text")
                     .HasComment("내용");
 
+                entity.Property(e => e.ThumbNail)                    
+                    .HasColumnType("text")
+                    .HasComment("대표이미지");
+
+                entity.Property(e => e.NftUrl)
+                    .HasColumnType("text")
+                    .HasComment("NFT URL");
+
                 entity.Property(e => e.FnsDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP")

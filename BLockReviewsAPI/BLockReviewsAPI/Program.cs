@@ -23,6 +23,7 @@ namespace BLockReviewsAPI
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
+                .Enrich.FromLogContext()
                 .CreateLogger();
 
             try

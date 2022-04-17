@@ -13,7 +13,7 @@ namespace BLockReviewsAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class FileController : ControllerBase
-    {
+    {           
         private readonly IWebHostEnvironment _environment;
         public FileController(IWebHostEnvironment environmnet)
         {
@@ -21,26 +21,39 @@ namespace BLockReviewsAPI.Controllers
         }
 
         [HttpPost("Upload")]
-        public async Task<IActionResult> Upload([FromForm]IFormFile file)
+        public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
-            var fileName = Path.GetFileName(ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'));
-
-            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\files");
-
-            if (!Directory.Exists(uploadFolder))
+            try
             {
-                Directory.CreateDirectory(uploadFolder);
+                var fileName = Path.GetFileName(ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'));
+
+                var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "Upload/files");
+
+                if (!Directory.Exists(uploadFolder))
+                {
+                    Directory.CreateDirectory(uploadFolder);
+                }
+
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "Upload/files", fileName);                
+
+                using (var fileStream = new FileStream(Path.Combine(uploadFolder, fileName), FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+                return Ok(fileName);
             }
-
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\files", fileName);
-
-
-            using (var fileStream = new FileStream(Path.Combine(uploadFolder, fileName), FileMode.Create))
+            catch(Exception ex)
             {
-                await file.CopyToAsync(fileStream);
+                return BadRequest(ex.Message);
             }
-
-            return Ok();
+            
         }
+    }
+
+    public class FormModel
+    {
+        public string fileName { get; set; }
+        public IFormFile file { get; set; }
     }
 }

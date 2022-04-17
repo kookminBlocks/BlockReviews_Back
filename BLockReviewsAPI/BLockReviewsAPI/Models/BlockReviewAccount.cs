@@ -59,18 +59,51 @@ namespace BLockReviewsAPI.Models
 
     public class ReviewRes
     {
-        public payloads payload { get; set; }
-        public class payloads
+        public bool success { get; set; }
+        public List<ReviewsDt> payload { get; set; }  
+    }
+
+    public class ReviewsDt
+    {
+        public int id { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public string owner { get; set; }
+        public string[] liked { get; set; }
+        public int nftId { get; set; }
+        public int price { get; set; }
+        public string category { get; set; }
+        public DateTime createAt { get; set; }
+    }
+
+    public class ReviewResByUser
+    {
+        public bool success { get; set; }
+        public List<UserReview> payload { get; set; }
+    }
+
+    public class UserReview
+    {
+        public int id { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public string writer { get; set; }
+        public string[] likeUser { get; set; }
+        public int nftId { get; set; }
+        public int price { get; set; }
+        public string category { get; set; }
+        public string createdAt { get; set; }
+
+    }
+
+    public class IpfsRes
+    {
+        public bool success { get; set; }        
+        public IpfsPayload payload { get; set; }
+
+        public class IpfsPayload
         {
-            public string id { get; set; }
-            public string title { get; set; }
-            public string description { get; set; }
-            public string owner { get; set; }
-            public string[] liked { get; set; }
-            public string nftId { get; set; }
-            public string price { get; set; }
-            public string category { get; set; }
-            public string createAt { get; set; }
+            public string hash { get; set; }
         }
     }
 }

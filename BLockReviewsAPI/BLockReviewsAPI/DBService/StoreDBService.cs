@@ -10,6 +10,7 @@ namespace BLockReviewsAPI.DBService
     public interface IStoreDBService
     {
         public Task<bool> CreateStore(Store store);
+        public Task<Store> GetStoreDetail(string storeId);
         public Task<List<Store>> GetStores();
         public Task<List<Store>> GetUserStore(string userId);
     }
@@ -35,7 +36,14 @@ namespace BLockReviewsAPI.DBService
                 return false;
             }
         }
-        
+
+        public async Task<Store> GetStoreDetail(string storeId)
+        {
+            var store = context.Stores.FirstOrDefault(x => x.Id == storeId);
+
+            return store;
+        }
+
         public async Task<List<Store>> GetStores()
         {
             return context.Stores.Take(10).ToList();
