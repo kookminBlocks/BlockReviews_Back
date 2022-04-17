@@ -1,5 +1,6 @@
 ﻿using BLockReviewsAPI.ApiService;
 using BLockReviewsAPI.BlockChainDI;
+using BLockReviewsAPI.Controllers;
 using BLockReviewsAPI.Data;
 using BLockReviewsAPI.Models;
 using System;
@@ -16,6 +17,7 @@ namespace BLockReviewsAPI.DBService
         public Task<ReviewRes> ReviewDetail(int reviewId);        
         public Task<ReviewRes> GetReviewByStore(string storeId);
         public Task<ReviewResByUser> GetReviewByUser(string pubkey);
+        public Task<IpfsRes> IpfsCreate(CreateIpfs ipfs);
     }
     public class ReviewDBService : IReviewService
     {
@@ -54,6 +56,12 @@ namespace BLockReviewsAPI.DBService
         public async Task<ReviewResByUser> GetReviewByUser(string pubkey)
         {
             var result = blockChainCall.GetReviewsByUser(pubkey).Result;
+            return result;
+        }
+
+        public async Task<IpfsRes> IpfsCreate(CreateIpfs ipfs)
+        {
+            var result = blockChainCall.CreateIpfs(ipfs).Result;
             return result;
         }
 

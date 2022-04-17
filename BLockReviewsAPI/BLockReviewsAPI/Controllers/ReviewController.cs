@@ -1,6 +1,7 @@
 ﻿using BLockReviewsAPI.DBService;
 using BLockReviewsAPI.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace BLockReviewsAPI.Controllers
         /// <summary>
         /// 리뷰 좋아요
         /// </summary>        
-        [HttpPut("Like/{reviewId}")]
+        [HttpPost("Like/{reviewId}")]
         public async Task<IActionResult> AddLike([FromBody] UserInfo userId, [FromRoute] int reviewId)
         {
             var like = await reviewDBService.AddLike(reviewId, userId);
@@ -73,5 +74,25 @@ namespace BLockReviewsAPI.Controllers
             var result = await reviewDBService.GetReviewByUser(userId);
             return Ok(result);
         }
+
+
+        /// <summary>
+        /// IPFS 생성
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpPost("ipfs")]
+        public async Task<IActionResult> CreateIpfs([FromBody] CreateIpfs ipfs)
+        {
+            var result = await reviewDBService.IpfsCreate(ipfs);
+            return Ok(result);
+        }
+    }
+
+    public class CreateIpfs
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public IFormFile file { get; set; }
     }
 }

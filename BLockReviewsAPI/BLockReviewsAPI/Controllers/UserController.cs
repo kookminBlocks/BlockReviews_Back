@@ -59,6 +59,7 @@ namespace BLockReviewsAPI.Controllers
         public async Task<IActionResult> Login([FromBody] UserInfo user)
         {            
             var result = await userDBService.Login(user);
+            result.AccountPrivateKey = user.AccountPrivateKey;
             if (result != null) { return Ok(result); }
             else { return BadRequest(); }
         }

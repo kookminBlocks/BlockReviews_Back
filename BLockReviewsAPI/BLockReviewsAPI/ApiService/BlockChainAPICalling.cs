@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using BLockReviewsAPI.Controllers;
+using System.IO;
 
 namespace BLockReviewsAPI.ApiService
 {
@@ -24,6 +26,8 @@ namespace BLockReviewsAPI.ApiService
         public Task<ReviewResByUser> GetReviewsByUser(string pubkey);
 
         public Task<ReviewRes> GetReviewDetail(int reviewId);
+
+        public Task<IpfsRes> CreateIpfs(CreateIpfs ipfs);
 
     }
 
@@ -106,7 +110,7 @@ namespace BLockReviewsAPI.ApiService
                 description = review.Content,
                 privatekey = review.User?.AccountPrivateKey,
                 pubkey = review.User?.AccountPublicKey,
-                nftUri = "0xtestIPFSHASH",
+                nftUri = review.NftUrl,
                 admin = AdminAccount,
                 amount = 1000,
             };
@@ -317,6 +321,30 @@ namespace BLockReviewsAPI.ApiService
             {
                 var resValue = response.Content.ReadAsStringAsync().Result;
                 var reviews = JsonConvert.DeserializeObject<ReviewResByUser>(resValue);
+
+                return reviews;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<IpfsRes> CreateIpfs(CreateIpfs ipfs)
+        {
+            var payload = JsonConvert.SerializeObject(ipfs);
+
+            var multiForm = new MultipartFormDataContent();            
+            multiForm.Add(new StringContent(ipfs.Title), "name");
+            multiForm.Add(new StringContent(ipfs.Description), "description");            
+            multiForm.Add(new StreamContent(ipfs.file.OpenReadStream()), "file");            
+
+            var response = await httpClient.PostAsync("api/blockreview/review/create/ipfs", multiForm);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var resValue = response.Content.ReadAsStringAsync().Result;
+                var reviews = JsonConvert.DeserializeObject<IpfsRes>(resValue);
 
                 return reviews;
             }

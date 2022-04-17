@@ -12,7 +12,9 @@ namespace BLockReviewsAPI.Models
         public string CategoryId { get; set; }
         public string StoreId { get; set; }
         public string Title { get; set; }
+        public string ThumbNail { get; set; }
         public string Content { get; set; }
+        public string NftUrl { get; set; }
         public DateTime? StDate { get; set; }
         public DateTime? FnsDate { get; set; }
 

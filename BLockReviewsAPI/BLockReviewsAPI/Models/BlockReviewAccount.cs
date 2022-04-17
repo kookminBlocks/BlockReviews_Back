@@ -95,4 +95,15 @@ namespace BLockReviewsAPI.Models
         public string createdAt { get; set; }
 
     }
+
+    public class IpfsRes
+    {
+        public bool success { get; set; }        
+        public IpfsPayload payload { get; set; }
+
+        public class IpfsPayload
+        {
+            public string hash { get; set; }
+        }
+    }
 }
